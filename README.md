@@ -8,3 +8,6 @@ VS Code extension "xml2jsoneditor".
 
 On Any XML file :
     - Right click - convert to JSON Editor
+
+# Preview
+![Screenshot](./docs/screen.png)
