@@ -1,0 +1,56 @@
+:root {
+  --container-padding: 20px;
+  --input-padding-vertical: 6px;
+  --input-padding-horizontal: 4px;
+  --input-margin-vertical: 4px;
+  --input-margin-horizontal: 0;
+}
+
+body {
+  padding: spacingNone var(--container-padding);
+  color: var(--vscode-foreground);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
+  font-family: var(--vscode-font-family);
+  background-color: var(--vscode-editor-background);
+}
+.jsoneditor-popover {
+  color:#fff;
+}
+.top-bar{
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 30px;
+  background-color: #000;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+.panel-file-title{
+  max-width: 62%;
+  overflow: auto;
+  text-overflow: clip;
+  font-size: 0.5rem;
+}
+.jsoneditor-menu{
+  background-color: var(--vscode-editor-background);
+}
+.panel-actions{
+  display:flex;
+}
+.nav-button{
+  margin:0.2rem;
+}
+.jsoneditor-button-asc{
+  background:var(--vscode-editor-background);
+  border-color:var(--vscode-editor-background);
+  color:#fff
+}
+.jsoneditor-modal .pico-modal-header{
+  background:var(--vscode-editor-background);
+  border-color:var(--vscode-editor-background);
+}
