@@ -1,8 +1,8 @@
 import * as xml2js from 'xml2js';
 import * as vscode from 'vscode';
 
-export function convertXmlFileToJson(fileContent:string) {
-    const isXML = fileContent.includes('<?xml');
+export function convertXmlFileToJson(fileContent:string | undefined) {
+    const isXML = fileContent?.includes('<?xml');
     if(!isXML) {
       vscode.window.showErrorMessage(`Must be an XML File!`);
       return {};
