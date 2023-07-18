@@ -33,18 +33,50 @@ body {
 .panel-file-title{
   max-width: 62%;
   overflow: auto;
-  text-overflow: clip;
-  font-size: 0.5rem;
+  text-overflow: ellipsis;
+  font-size: 0.7rem;
+  font-style: italic;
+  padding: 0 0.2rem;
 }
 .jsoneditor-menu{
   background-color: var(--vscode-editor-background);
 }
 .panel-actions{
   display:flex;
+  padding-right: 1rem;
 }
 .nav-button{
+  background: #d0d6d8;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  padding: 0;
   margin:0.2rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  outline-offset: 4px;
 }
+.red-back {
+  background: #b3837d;
+}
+.nav-button-front{
+  display: block;
+  padding: 0.3rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background: #008CBA;
+  color: white;
+  transform: translate(-2px, -2px);
+}
+.red-front{
+  background: #ba351b;
+}
+.nav-button:hover .nav-button-front,
+.nav-button:active .nav-button-front {
+  transform: translate(0,0);
+}
+
 .jsoneditor-button-asc{
   background:var(--vscode-editor-background);
   border-color:var(--vscode-editor-background);
@@ -54,3 +86,5 @@ body {
   background:var(--vscode-editor-background);
   border-color:var(--vscode-editor-background);
 }
+
+
