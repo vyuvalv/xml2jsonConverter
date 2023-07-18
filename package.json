@@ -7,25 +7,24 @@
     "vscode": "^1.75.0"
   },
   "categories": [
-    "Visualization"
+    "Visualization","Linters"
   ],
-  "activationEvents": [
-    "onLanguage:xml"
-  ],
+  "activationEvents": [],
+  "publisher": "vyuvalv",
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "xml2jsoneditor.xmlToJson",
-        "title": "🚀 Convert XML File to JSON 🚀"
+        "title": "🚀 View XML File as JSON 🚀"
       },
       {
         "command": "xml2jsoneditor.viewJson",
-        "title": "📺 View JSON Editor 📺"
+        "title": "📺 View in JSON Editor 📺"
       },
       {
         "command": "xml2jsoneditor.openFile",
-        "title": "📺 Open File 📺"
+        "title": "🎱 Open File in JSON Editor"
       }
     ],
     "menus": {
@@ -42,11 +41,7 @@
       "explorer/context": [
         {
           "command": "xml2jsoneditor.openFile",
-          "when": "resourceExtname == '.xml' || resourceLangId == xml"
-        },
-        {
-          "command": "xml2jsoneditor.viewJson",
-          "when": "resourceLangId == json"
+          "when": "resourceExtname == '.xml' || resourceLangId == xml || resourceLangId == json"
         }
       ]
     }

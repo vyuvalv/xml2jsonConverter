@@ -13,40 +13,78 @@ export function activate(context: vscode.ExtensionContext) {
 	// XML to JSON Action from Opened XML Editor File
 	context.subscriptions.push(vscode.commands.registerCommand(CMD_CONVERT_XML_TO_JSON, async (file) => {
 		const panel = new XmlJsonEditorPanel(context, file, true);
-		await panel.getDocumentContent(true);
-		panel.createOrShowPanel();
-		panel.doConvertXmlToJson();
+		progress(
+			"Open XML file in JSON Editor",
+			panel.getDocumentContent(true),
+			panel.createOrShowPanel()
+		);
+		try {
+			vscode.window.showInformationMessage(`Opening file in JSON Editor`);
+			panel.doConvertXmlToJson();
+		} catch (error) {
+			vscode.window.showErrorMessage(`Could not open XML file!`);
+		}
 	}));
 
 	// View JSON Action from Opened JSON File
 	context.subscriptions.push(vscode.commands.registerCommand(CMD_VIEW_JSON, async (file) => {
 		const panel = new XmlJsonEditorPanel(context, file, true);
-		await panel.getDocumentContent(true);
-		panel.createOrShowPanel();
-		panel.doJsonToJsonEditor();	
+		progress(
+			"Open JSON file in JSON Editor",
+			panel.getDocumentContent(true),
+			panel.createOrShowPanel()
+		);
+		try {
+			vscode.window.showInformationMessage(`Opening file in JSON Editor`);
+			panel.doJsonToJsonEditor();	
+		} catch (error) {
+			vscode.window.showErrorMessage(`Could not open JSON file!`);
+		}
 	}));
+
 	// View JSON Action from Opened JSON File
 	context.subscriptions.push(vscode.commands.registerCommand(CMD_OPEN_FILE, async (file:vscode.Uri) => {
-		// const { fsPath } = arguments[0];
-		// console.log('arguments');
-		// console.log(item);
-		// const isXml = file.fsPath.includes('.xml');
-		// let doc = await vscode.workspace.openTextDocument(file.fsPath); 
-
-		// const content = await doc.getText();
 		const panel = new XmlJsonEditorPanel(context, file, false);
 		await panel.getDocumentContent(false);
+		vscode.window.showInformationMessage(`Opening file in JSON Editor`);
 		panel.createOrShowPanel();
 		if (panel.isXml) {
-			panel.doConvertXmlToJson();
+			try {
+				panel.doConvertXmlToJson();
+			} catch (error) {
+				vscode.window.showErrorMessage(`Could not open XML file!`);
+			}
+			
 		}
 		else {
-			panel.doJsonToJsonEditor();	
+			try {
+				panel.doJsonToJsonEditor();	
+			} catch (error) {
+				vscode.window.showErrorMessage(`Could not open JSON file!`);
+			}
 		}
-	
 	}));
 
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
+
+async function progress(title: string, step1: any, step2: any) { 
+	vscode.window.withProgress({
+	  location: vscode.ProgressLocation.Notification,
+	  title: title,
+	  cancellable: true
+	}, async (progress, token) => {
+  
+	  token.onCancellationRequested(() => {
+		console.log("User canceled operation");
+	  });
+  
+		progress.report({ increment: 0, message: "Start" });
+			await step1();
+		progress.report({ increment: 50, message: "Progress" });
+			await step2();
+	 	 progress.report({ increment: 100, message: "Done" });	
+	});
+  }

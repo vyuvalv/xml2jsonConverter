@@ -23,17 +23,6 @@ export class XmlJsonEditorPanel {
     this.isXml = this._curentFilePath.includes('.xml');
     this._formattedFilePath = this._curentFilePath.split('/').pop();
     this.isActiveEditor = useActiveEditor;
-    // try {
-    //   async () => await this.getDocumentContent(useActiveEditor);
-    // }
-    // catch (err) {
-    //   vscode.window.showErrorMessage(`No Content File!`);
-    //   throw new Error(`Could Not open the file`);
-
-    // }
-
-    // this._panel = this.createOrShowPanel();
-	
   }
 
   public createOrShowPanel(): vscode.WebviewPanel {
@@ -57,7 +46,7 @@ export class XmlJsonEditorPanel {
 
     this._webview = this._panel.webview;
     this._webview.html = this._getHtmlForWebview();
-	
+
 	  // Listen for when the panel is disposed
 		// This happens when the user closes the panel or when the panel is closed programmatically
 		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -67,18 +56,31 @@ export class XmlJsonEditorPanel {
 					// get Event Schema - { type: string, value:string }
           switch (data.type) {
             case 'xmlfile':
-                vscode.window.showInformationMessage(`Converting Json to xml`);
+              try {
+                vscode.window.showInformationMessage(`Writing XML File`);
                 const xmlData:any = await convertJsonFileToXml(data.value);
-                await this.openDoc(xmlData,'xml');
+                await this.openDoc( xmlData, 'xml' );
+              } catch (error) {
+                vscode.window.showErrorMessage(`Could not open XML file!`);
+              }
               break;
             case 'jsonfile':
-              vscode.window.showInformationMessage(`open Json file`);
-              const jsonContent = JSON.parse(data.value);
-              await this.openDoc(JSON.stringify(jsonContent,null,' '),'json');
+              try {
+                const jsonContent: any = JSON.stringify(JSON.parse(data.value), null, ' ');
+                vscode.window.showInformationMessage(`Writing Json file`);
+                await this.openDoc(jsonContent, 'json');
+                
+              } catch (error) {
+                vscode.window.showErrorMessage(`Could not open Json file!`);
+              }
             break;
             case 'refreshfile':
-              vscode.window.showInformationMessage(`Refreshing active file content`);
-              this.doRefresh(data.originalType);
+              try {
+                vscode.window.showInformationMessage(`Refreshing active file content`);
+                this.doRefresh(data.originalType);
+              } catch (error) {
+                vscode.window.showErrorMessage(`Could not refresh file!`);
+              }
             break;
             default:
               vscode.window.showInformationMessage(`No Such command ${data.type}`);
@@ -103,7 +105,7 @@ export class XmlJsonEditorPanel {
 
 	public dispose() {
 		// Clean up our resources
-		this._panel.dispose();
+		this._panel?.dispose();
 
 		while (this._disposables.length) {
 			const x = this._disposables.pop();
@@ -151,6 +153,7 @@ export class XmlJsonEditorPanel {
 
       if (!this.currentFileContent) {
         this.currentFileContent = fileContent;
+        vscode.window.showErrorMessage(`Could not found Content in File!`);
       }
       const jsonData = await convertXmlFileToJson(this.currentFileContent);
       progress.report({  increment: 50, message: "Converting xml to json" });
@@ -173,6 +176,7 @@ export class XmlJsonEditorPanel {
       
       if (!this.currentFileContent) {
         this.currentFileContent = fileContent;
+        vscode.window.showErrorMessage(`Could not found Content in File!`);
       }
       progress.report({ increment: 0, message: "Opening JSON Editor" });
       // Update Content to Webview
@@ -229,22 +233,7 @@ export class XmlJsonEditorPanel {
   }
 
 }
-function progress() { 
-  vscode.window.withProgress({
-    location: vscode.ProgressLocation.Notification,
-    title: "Open JSON file in JSON Editor",
-    cancellable: true
-  }, async (progress, token) => {
 
-    token.onCancellationRequested(() => {
-      console.log("User canceled operation");
-    });
-
-    progress.report({ increment: 0 });
-
-    progress.report({ increment: 100, message: "Open" });	
-  });
-}
 function getNonce() {
 	let text = '';
 	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
