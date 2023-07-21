@@ -1,7 +1,6 @@
 
 import * as vscode from 'vscode';
 import { XmlJsonEditorPanel } from './utils/editorWebview';
-import { convertXmlFileToJson, convertJsonFileToXml } from './utils/xmlHelper';
 
 // Commands exposed on package.json contributes
 const CMD_CONVERT_XML_TO_JSON = 'xml2jsoneditor.xmlToJson';
@@ -17,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Start Progress bar
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Converting XML Content to JSON",
+			title: "XML-2-JSON",
 			cancellable: true
 		}, async (progress, token) => {
 
@@ -55,12 +54,12 @@ export function activate(context: vscode.ExtensionContext) {
 		// Start Progress bar
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Converting XML Content to JSON",
+			title: "JSON-2-JSON",
 			cancellable: true
 		}, async (progress, token) => {
 
 			token.onCancellationRequested(() => {
-				console.log("User canceled XML conversion");
+				console.log("User canceled JSON conversion");
 			});
 			// init panel
 			const panel = new XmlJsonEditorPanel(context, file, true);
@@ -91,7 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Start Progress bar
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Converting XML Content to JSON",
+			title: "XML-2-JSON",
 			cancellable: true
 		}, async (progress, token) => {
 
@@ -103,32 +102,26 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ increment: 0, message: "Retreiving content from file" });
 			// Retrieving content from activeEditor
 			panel.originalFileContent = await panel.getContentFromExplorerFile();
-			progress.report({ increment: 25, message: "Converting and formatting content" });
-			
-			try {
-				progress.report({ increment: 50, message: "Loading content to webview" });
-				// Convert
-				if (panel.isXml) {
-					try {
-						panel.convertedFileContent = await panel.doConvertXmlToJson(panel.originalFileContent, false);
-					} catch (error) {
-						vscode.window.showErrorMessage(`Could not open XML file!`);
-					}
-					
-				}
-				else {
-					try {
-						panel.convertedFileContent = JSON.parse(panel.originalFileContent);
-					} catch (error) {
-						vscode.window.showErrorMessage(`Could not open JSON file!`);
-					}
-				}
-				
-				
 	
-			} catch (error) {
-				vscode.window.showErrorMessage(`Could not open JSON file!`);
+		
+			progress.report({ increment: 50, message: "Loading content to webview" });
+			// Convert
+			if (panel.isXml) {
+				try {
+					panel.convertedFileContent = await panel.doConvertXmlToJson(panel.originalFileContent, false);
+				} catch (error) {
+					vscode.window.showErrorMessage(`Could not open XML file!`);
+				}
+				
 			}
+			else {
+				try {
+					panel.convertedFileContent = JSON.parse(panel.originalFileContent);
+				} catch (error) {
+					vscode.window.showErrorMessage(`Could not open JSON file!`);
+				}
+			}
+				
 			progress.report({ increment: 80, message: "Creating webview" });
 			await panel.createOrShowPanel();
 			// update
