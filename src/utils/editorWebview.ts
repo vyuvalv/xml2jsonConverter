@@ -5,45 +5,47 @@ import { convertXmlFileToJson, convertJsonFileToXml } from './xmlHelper';
  */
 export class XmlJsonEditorPanel {
   public static readonly viewType = 'jsonEditorView';
-  private _panel: vscode.WebviewPanel|undefined;
+  private _panel?: vscode.WebviewPanel;
   private readonly _context: vscode.ExtensionContext;
-  private _webview:vscode.Webview|undefined;
-  private  _activeEditor:vscode.TextEditor|undefined;
+  private _webview?:vscode.Webview;
   private _disposables: vscode.Disposable[] = [];
-  public currentFileContent: any;
-  private _formattedFilePath: any;
-  private _curentFilePath: any;
+  private  _activeEditor?:vscode.TextEditor;
+  public originalFileContent: any;
+  public convertedFileContent: any;
+  public editorTitle: any;
   public isXml: boolean;
-  private isActiveEditor: boolean;
+  private _curentFilePath: any;
+  private _editorColumn: vscode.ViewColumn;
 
   public constructor(context: vscode.ExtensionContext, file:vscode.Uri, useActiveEditor:boolean ) {
     this._context = context;
     // Set File Path and Title Properties
     this._curentFilePath = file.fsPath;
     this.isXml = this._curentFilePath.includes('.xml');
-    this._formattedFilePath = this._curentFilePath.split('/').pop();
-    this.isActiveEditor = useActiveEditor;
+    // Format file path for title
+    this.editorTitle = this._curentFilePath.split('/').pop();
+    this._editorColumn = vscode.ViewColumn.One;
   }
 
   public createOrShowPanel(): vscode.WebviewPanel {
-    const alternateColumn = this.isActiveEditor && this._activeEditor?.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
+    this._editorColumn = this._activeEditor?.viewColumn === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
 		// If we already have a panel, show it.
 		if (this._panel) {
-			this._panel.reveal(alternateColumn);
+			this._panel.reveal(this._editorColumn);
 			return this._panel;
 		}
 		// Otherwise, create a new panel.
 		this._panel = vscode.window.createWebviewPanel(
 			XmlJsonEditorPanel.viewType,
-			this._formattedFilePath,
-			alternateColumn,
+			this.editorTitle,
+			this._editorColumn,
 			{
 				localResourceRoots: [this._context.extensionUri],
 				enableScripts: true,
 				retainContextWhenHidden: true
 			} 
     );
-
+    // sets webview  
     this._webview = this._panel.webview;
     this._webview.html = this._getHtmlForWebview();
 
@@ -92,15 +94,21 @@ export class XmlJsonEditorPanel {
     return this._panel;
   }
 
-  public async getDocumentContent(useActiveEditor:boolean) { 
-    if(useActiveEditor){
-      this._activeEditor = vscode.window.activeTextEditor;
-      this.currentFileContent = this._activeEditor?.document.getText();
+
+  public async getContentFromActiveEditor() { 
+    this._activeEditor = vscode.window.activeTextEditor;
+    if (!this._activeEditor) {
+      return;
     }
-    else {
-      const doc = await vscode.workspace.openTextDocument(this._curentFilePath); 
-      this.currentFileContent = await doc.getText();
+    return await this._activeEditor?.document.getText();
+  }
+
+  public async getContentFromExplorerFile(filePath?:string) { 
+    if (!this._curentFilePath) {
+      this._curentFilePath = filePath;
     }
+    const doc = await vscode.workspace.openTextDocument(this._curentFilePath); 
+    return await doc.getText();
   }
 
 	public dispose() {
@@ -129,64 +137,35 @@ export class XmlJsonEditorPanel {
   private doRefresh(fileType:string) { 
     switch (fileType) {
       case 'xml':
-        this.doConvertXmlToJson();
+        this.doConvertXmlToJson(this.originalFileContent, true);
         break;
       case 'json':
-        this.doJsonToJsonEditor();
+        const jsonData = JSON.parse(this.originalFileContent);
+        this.updateWebview(jsonData, this.editorTitle, 'json');
         break;
     }
 
   }
 	// XML to JSON Action from Opened XML Editor File
-  public doConvertXmlToJson(fileContent?:any) {
-    vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: "Converting XML Content to JSON",
-			cancellable: true
-		}, async (progress, token) => {
-
-			token.onCancellationRequested(() => {
-				console.log("User canceled XML conversion");
-			});
-
-      progress.report({ increment: 0 });
-
-      if (!this.currentFileContent) {
-        this.currentFileContent = fileContent;
-        vscode.window.showErrorMessage(`Could not found Content in File!`);
-      }
-      const jsonData = await convertXmlFileToJson(this.currentFileContent);
-      progress.report({  increment: 50, message: "Converting xml to json" });
+  public async doConvertXmlToJson(fileContent?:any, doUpdate?:boolean) {
+    let jsonData = {};
+    if (!this.originalFileContent) {
+      this.originalFileContent = fileContent;
+      vscode.window.showErrorMessage(`Could not found Content in File!`);
+    }
+    try {
+      jsonData = await convertXmlFileToJson(this.originalFileContent);
       // Update Content to Webview
-      this.updateWebview(jsonData, this._formattedFilePath, 'xml');
-			progress.report({ increment: 100, message: "Opening JSON Editor" });	
-		});
+      if(doUpdate){
+        this.updateWebview(jsonData, this.editorTitle, 'xml');
+      }
+    } catch (error) {
+      vscode.window.showErrorMessage(`Could not convert file!`);
+    }
+    return jsonData;
   }
-  // View JSON Action from Opened JSON File
-  public doJsonToJsonEditor(fileContent?:any) {
-    vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: "Open JSON file in JSON Editor",
-			cancellable: true
-		}, async (progress, token) => {
 
-			token.onCancellationRequested(() => {
-				console.log("User canceled operation");
-      });
-      
-      if (!this.currentFileContent) {
-        this.currentFileContent = fileContent;
-        vscode.window.showErrorMessage(`Could not found Content in File!`);
-      }
-      progress.report({ increment: 0, message: "Opening JSON Editor" });
-      // Update Content to Webview
-      const jsonData = JSON.parse(this.currentFileContent);
-      this.updateWebview(jsonData, this._formattedFilePath, 'json');
-			progress.report({ increment: 100, message: "Open" });	
-		});
-	}
-
-  private updateWebview(content: any, fileName:string, fileType:string) { 
+  public updateWebview(content: any, fileName:string, fileType:string) { 
       // Update Content to Webview
       this._webview?.postMessage({
         type:fileType,
