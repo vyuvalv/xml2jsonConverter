@@ -1,7 +1,8 @@
 {
   "name": "xml2jsoneditor",
-  "displayName": "Xml To Json Editor",
-  "description": "Extension to convert bi-directional XML to JSON Editor",
+  "displayName": "Xml2Json Editor",
+  "description": "Modify XML or JSON files using JSON Editor - Bi-directional conversion, sort, edit and more..",
+  "icon": "docs/xml2Json.png",
   "version": "0.1.1",
   "engines": {
     "vscode": "^1.80.0"
@@ -9,6 +10,7 @@
   "categories": [
     "Visualization","Linters"
   ],
+  "keywords": ["xml","json","sfdx"],
   "activationEvents": [],
   "publisher": "vyuvalv",
   "repository": "https://github.com/vyuvalv/xml2jsonConverter",
