@@ -148,10 +148,9 @@ export class XmlJsonEditorPanel {
   }
 	// XML to JSON Action from Opened XML Editor File
   public async doConvertXmlToJson(fileContent?:any, doUpdate?:boolean) {
-    let jsonData = {};
+    let jsonData;
     if (!this.originalFileContent) {
       this.originalFileContent = fileContent;
-      vscode.window.showErrorMessage(`Could not found Content in File!`);
     }
     try {
       jsonData = await convertXmlFileToJson(this.originalFileContent);
@@ -160,7 +159,7 @@ export class XmlJsonEditorPanel {
         this.updateWebview(jsonData, this.editorTitle, 'xml');
       }
     } catch (error) {
-      vscode.window.showErrorMessage(`Could not convert file!`);
+      vscode.window.showErrorMessage(`Could not convert file! Bad XML`);
     }
     return jsonData;
   }

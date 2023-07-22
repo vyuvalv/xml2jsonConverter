@@ -18,7 +18,7 @@ Extension Working from :
 - `explorer/context`:
     - Any Explorer XML/JSON file supports `right click` and will allow to view in JSON editor
 - *JSON Editor* will allow to modify the JSON content as you wish - eg. edit, sort, filter...
-- Extension will allow a few more option to complete the process.
+- Extension will allow a few more options to complete the process.
     - Convert an XML file that was previously converted to JSON Back to XML.
     - Export as JSON
     - Refresh content

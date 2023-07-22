@@ -17,4 +17,6 @@ All notable changes to the "xml2jsoneditor" extension will be documented in this
     - Export as JSON
     - Refresh content
 
-### Fixed
+## [2.0.1] - 23/07/2023
+### Fixed BUGS 
+- Loading content from explorer file enhancements

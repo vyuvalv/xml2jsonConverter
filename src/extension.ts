@@ -34,16 +34,25 @@ export function activate(context: vscode.ExtensionContext) {
 				progress.report({ increment: 50, message: "Loading content to webview" });
 				// Convert
 				panel.convertedFileContent = await panel.doConvertXmlToJson(panel.originalFileContent, false);
+				
+				
+				// update
+				if (!isJsonString(JSON.stringify(panel.convertedFileContent))) {
+					vscode.window.showErrorMessage(`Does not find content`);
+				}
+				else {
+					progress.report({ increment: 80, message: "Creating webview" });
+					await panel.createOrShowPanel();
+					panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'xml');
+					progress.report({ increment: 100, message: "Opening JSON Editor" });
+				}
 			
 
 			} catch (error) {
 				vscode.window.showErrorMessage(`Could not open XML file!`);
 			}
-			progress.report({ increment: 80, message: "Creating webview" });
-			await panel.createOrShowPanel();
-			// update
-			panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'xml');
-			progress.report({ increment: 100, message: "Opening JSON Editor" });
+		
+		
 			
 		});
 	}));
@@ -72,15 +81,21 @@ export function activate(context: vscode.ExtensionContext) {
 				progress.report({ increment: 50, message: "Loading content to webview" });
 				// Convert
 				panel.convertedFileContent = JSON.parse(panel.originalFileContent);
-	
+
+				if (!isJsonString(JSON.stringify(panel.convertedFileContent))) {
+					vscode.window.showErrorMessage(`Something wrong with the JSON file!`);
+				}
+				else {
+					progress.report({ increment: 80, message: "Creating webview" });
+					await panel.createOrShowPanel();
+					// update
+					panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'json');
+					progress.report({ increment: 100, message: "Opening JSON Editor" });
+				}
 			} catch (error) {
 				vscode.window.showErrorMessage(`Could not open JSON file!`);
 			}
-			progress.report({ increment: 80, message: "Creating webview" });
-			await panel.createOrShowPanel();
-			// update
-			panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'json');
-			progress.report({ increment: 100, message: "Opening JSON Editor" });
+			
 			
 		});
 	}));
@@ -90,7 +105,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Start Progress bar
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "XML-2-JSON",
+			title: "FILE-2-JSON",
 			cancellable: true
 		}, async (progress, token) => {
 
@@ -103,31 +118,31 @@ export function activate(context: vscode.ExtensionContext) {
 			// Retrieving content from activeEditor
 			panel.originalFileContent = await panel.getContentFromExplorerFile();
 	
-		
 			progress.report({ increment: 50, message: "Loading content to webview" });
-			// Convert
-			if (panel.isXml) {
-				try {
+			try {
+				// Convert
+				if (panel.isXml) {
 					panel.convertedFileContent = await panel.doConvertXmlToJson(panel.originalFileContent, false);
-				} catch (error) {
-					vscode.window.showErrorMessage(`Could not open XML file!`);
 				}
-				
-			}
-			else {
-				try {
+				else {
 					panel.convertedFileContent = JSON.parse(panel.originalFileContent);
-				} catch (error) {
-					vscode.window.showErrorMessage(`Could not open JSON file!`);
 				}
-			}
-				
-			progress.report({ increment: 80, message: "Creating webview" });
-			await panel.createOrShowPanel();
-			// update
-			panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'json');
-			progress.report({ increment: 100, message: "Opening JSON Editor" });
+					
+				if (!isJsonString(JSON.stringify(panel.convertedFileContent))) {
+					vscode.window.showErrorMessage(`Could not find any content in file`);
+				}	
+				else {
+					progress.report({ increment: 80, message: "Creating webview" });
+					await panel.createOrShowPanel();
+					// update
+					panel.updateWebview(panel.convertedFileContent, panel.editorTitle, 'json');
+					progress.report({ increment: 100, message: "Opening JSON Editor" });
+				}
 			
+					
+			} catch (error) {
+				vscode.window.showErrorMessage(`Could not open file!`);
+			}
 		});
 		
 		
@@ -137,3 +152,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
+
+function isJsonString(str:string) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
