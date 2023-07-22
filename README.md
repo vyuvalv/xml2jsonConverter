@@ -1,6 +1,9 @@
-#  README
 # VS Code extension `xml2jsoneditor`
+
 Main Use case for this extension was for Salesforce sfdx xml files, to allow edit and modification of some xml.
+
+Ever had to Edit or Sort an Xml file? this extension is for you :)
+quick and simple conversion to JSON and you are able to modify what you want...
 
 ## Features
     - Convert XML file to JSON and allow to edit using JSON EDitor
@@ -9,7 +12,7 @@ Main Use case for this extension was for Salesforce sfdx xml files, to allow edi
     * [xml2js](https://www.npmjs.com/package/xml2js)
     * [jsoneditor](https://www.npmjs.com/package/jsoneditor) 
 
-Working from :
+Extension Working from :
 - `editor/context`:
     - Any Open Editor XML/JSON file supports `right click` and will allow to view in JSON editor
 - `explorer/context`:
