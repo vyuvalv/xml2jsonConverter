@@ -21,4 +21,4 @@ Working from :
     - Refresh content
 
 # Preview
-![Screenshot](./docs/screen.png)
+![Screenshot](./docs/EditorXml_DEMO.gif)
