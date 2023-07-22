@@ -15,8 +15,10 @@
   const editor = new JSONEditor(container, options);
   let jsonContent;
   let fileType;
+
   // Listen to messages from vscode
   window.addEventListener("message", (event) => {
+
     const { type, content, fileName } = event.data;
     jsonContent = content;
     fileType = type;

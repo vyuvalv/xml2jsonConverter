@@ -2,29 +2,33 @@
   "name": "xml2jsoneditor",
   "displayName": "Xml To Json Editor",
   "description": "Extension to convert bi-directional XML to JSON Editor",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
     "Visualization","Linters"
   ],
   "activationEvents": [],
   "publisher": "vyuvalv",
+  "repository": "https://github.com/vyuvalv/xml2jsonConverter",
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "xml2jsoneditor.xmlToJson",
-        "title": "🚀 View XML File as JSON 🚀"
+        "title": "🚀 View XML File as JSON",
+        "category": "editor"
       },
       {
         "command": "xml2jsoneditor.viewJson",
-        "title": "📺 View in JSON Editor 📺"
+        "title": "📺 View in JSON Editor",
+        "category": "editor"
       },
       {
         "command": "xml2jsoneditor.openFile",
-        "title": "🎱 Open File in JSON Editor"
+        "title": "🎱 Open File in JSON Editor",
+        "category": "explorer"
       }
     ],
     "menus": {
@@ -41,7 +45,7 @@
       "explorer/context": [
         {
           "command": "xml2jsoneditor.openFile",
-          "when": "resourceExtname == '.xml' || resourceLangId == xml || resourceLangId == json"
+          "when": "resourceLangId == xml || resourceLangId == json"
         }
       ]
     }
