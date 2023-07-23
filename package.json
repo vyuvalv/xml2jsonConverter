@@ -3,7 +3,7 @@
   "displayName": "Xml2Json Editor",
   "description": "Modify XML or JSON files using JSON Editor - Bi-directional conversion, sort, edit and more..",
   "icon": "docs/xml2Json.png",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engines": {
     "vscode": "^1.80.0"
   },
